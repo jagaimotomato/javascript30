@@ -1,0 +1,38 @@
+name: Deploy to GitHub Pages
+
+# 触发条件：当有代码推送到 main 分支时运行
+on:
+  push:
+    branches: [main]
+
+# 设置权限：允许工作流写入 Pages 和读取仓库内容
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 检出代码
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 配置 GitHub Pages，指定子目录
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          static_site_generator: false # 不使用静态网站生成器
+          static_site_dir: docs # 指定 HTML 文件所在目录
+
+      # 上传构建产物
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      # 部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
