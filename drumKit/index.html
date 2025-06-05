@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Drum Kit</title>
+  </head>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      height: 100vh;
+      background: url("assets/background.jpg") center center no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .box {
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      background-color: rgba(0, 0, 0, 0.1);
+      border: 0.5rem solid #000;
+      width: 100px;
+      transition: all 0.07s ease;
+    }
+    .box div:first-child {
+      color: #fff;
+      font-size: 2.2rem;
+    }
+    .box div:last-child {
+      color: #ffc600;
+      font-size: 1.2rem;
+    }
+    .playing {
+      transform: scale(1.1);
+      border-color: #ffc600;
+      box-shadow: 0 0 1rem #ffc600;
+    }
+  </style>
+  <body>
+    <div class="container">
+      <div class="box" data-key="65">
+        <div>A</div>
+        <div>CLAP</div>
+      </div>
+      <div class="box" data-key="83">
+        <div>S</div>
+        <div>HIHAT</div>
+      </div>
+      <div class="box" data-key="68">
+        <div>D</div>
+        <div>kick</div>
+      </div>
+      <div class="box" data-key="70">
+        <div>F</div>
+        <div>openhat</div>
+      </div>
+      <div class="box" data-key="71">
+        <div>G</div>
+        <div>boom</div>
+      </div>
+      <div class="box" data-key="72">
+        <div>H</div>
+        <div>ride</div>
+      </div>
+      <div class="box" data-key="74">
+        <div>J</div>
+        <div>snare</div>
+      </div>
+      <div class="box" data-key="75">
+        <div>K</div>
+        <div>tom</div>
+      </div>
+      <div class="box" data-key="76">
+        <div>L</div>
+        <div>tink</div>
+      </div>
+    </div>
+  </body>
+  <audio data-key="65" src="assets/clap.wav"></audio>
+  <audio data-key="83" src="assets/hihat.wav"></audio>
+  <audio data-key="68" src="assets/kick.wav"></audio>
+  <audio data-key="70" src="assets/openhat.wav"></audio>
+  <audio data-key="71" src="assets/boom.wav"></audio>
+  <audio data-key="72" src="assets/ride.wav"></audio>
+  <audio data-key="74" src="assets/snare.wav"></audio>
+  <audio data-key="75" src="assets/tom.wav"></audio>
+  <audio data-key="76" src="assets/tink.wav"></audio>
+  <script>
+    function playSound(e) {
+      const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
+      const key = document.querySelector(`div[data-key="${e.keyCode}"]`);
+
+      if (!audio) return;
+
+      key.classList.add("playing");
+      audio.currentTime = 0;
+      audio.play();
+    }
+
+    function removeTransition(e) {
+      if (e.propertyName !== "transform") return;
+      e.target.classList.remove("playing");
+    }
+
+    const keys = Array.from(document.querySelectorAll(".box"));
+    keys.forEach((key) =>
+      key.addEventListener("transitionend", removeTransition)
+    );
+
+    document.addEventListener("keydown", playSound);
+  </script>
+</html>
