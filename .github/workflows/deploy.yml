@@ -19,12 +19,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 配置 GitHub Pages，指定子目录
+      # 配置 GitHub Pages
       - name: Configure Pages
         uses: actions/configure-pages@v5
-        with:
-          static_site_generator: false # 不使用静态网站生成器
-          static_site_dir: docs # 指定 HTML 文件所在目录
 
       # 上传构建产物
       - name: Upload artifact
