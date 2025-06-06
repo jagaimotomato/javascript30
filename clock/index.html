@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>JS + CSS Clock</title>
+    <link rel="icon" href="https://fav.farm/🔥" />
+  </head>
+  <body>
+    <div class="clock">
+      <div class="clock-face">
+        <div class="hand hour-hand"></div>
+        <div class="hand min-hand"></div>
+        <div class="hand second-hand"></div>
+      </div>
+    </div>
+
+    <style>
+      html {
+        background: #018ded url(https://unsplash.it/1500/1000?image=881&blur=5);
+        background-size: cover;
+        font-family: "helvetica neue";
+        text-align: center;
+        font-size: 10px;
+      }
+
+      body {
+        margin: 0;
+        font-size: 2rem;
+        display: flex;
+        flex: 1;
+        min-height: 100vh;
+        align-items: center;
+      }
+
+      .clock {
+        width: 30rem;
+        height: 30rem;
+        border: 20px solid white;
+        border-radius: 50%;
+        margin: 50px auto;
+        position: relative;
+        padding: 2rem;
+        box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1), inset 0 0 0 3px #efefef,
+          inset 0 0 10px black, 0 0 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .clock-face {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform: translateY(
+          -3px
+        ); /* account for the height of the clock hands */
+      }
+
+      .hand {
+        width: 6px;
+        height: 50%;
+        background: black;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform-origin: 50% 100%;
+      }
+      .hour-hand {
+        height: 40%;
+      }
+      .min-hand {
+        height: 45%;
+      }
+    </style>
+
+    <script>
+      const hourhand = document.querySelector(".hour-hand");
+      const minhand = document.querySelector(".min-hand");
+      const sechand = document.querySelector(".second-hand");
+
+      setInterval(() => {
+        const date = new Date();
+        let hour = date.getHours();
+        const min = date.getMinutes();
+        const sec = date.getSeconds();
+
+        // 转换为12小时制
+        if (hour > 12) {
+          hour -= 12;
+        }
+        if (hour === 0) {
+          hour = 12;
+        }
+
+        // 计算角度（每小时30度，每分钟6度，每秒6度）
+        const houroffset = hour * 30 + min * 0.5; // 时针每分钟移动0.5度
+        const minoffset = min * 6; // 分针每分钟6度
+        const secoffset = sec * 6; // 秒针每秒6度
+
+        hourhand.style.transform = `translate(-50%, -100%) rotate(${houroffset}deg)`;
+        minhand.style.transform = `translate(-50%, -100%) rotate(${minoffset}deg)`;
+        sechand.style.transform = `translate(-50%, -100%) rotate(${secoffset}deg)`;
+      }, 1000);
+    </script>
+  </body>
+</html>
