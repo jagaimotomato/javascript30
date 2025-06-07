@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Scoped CSS Variables and JS</title>
+  </head>
+  <body>
+    <h2>Update CSS Variables with <span class="hl">JS</span></h2>
+
+    <div class="controls">
+      <label for="spacing">Spacing:</label>
+      <input
+        id="spacing"
+        type="range"
+        name="spacing"
+        min="10"
+        max="200"
+        value="10"
+        data-sizing="px"
+      />
+
+      <label for="blur">Blur:</label>
+      <input
+        id="blur"
+        type="range"
+        name="blur"
+        min="0"
+        max="25"
+        value="10"
+        data-sizing="px"
+      />
+
+      <label for="base">Base Color</label>
+      <input id="base" type="color" name="base" value="#ffc600" />
+    </div>
+
+    <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500" />
+
+    <style>
+      /* 
+        定义CSS变数 - 这些是全局的CSS custom properties
+        可以在任何地方使用并被JavaScript更新
+      */
+      :root {
+        --base: #ffc600;
+        --spacing: 10px;
+        --blur: 10px;
+      }
+
+      /*
+      misc styles, nothing to do with CSS variables
+    */
+
+      body {
+        text-align: center;
+        background: #193549;
+        color: white;
+        font-family: "helvetica neue", sans-serif;
+        font-weight: 100;
+        font-size: 50px;
+      }
+
+      .controls {
+        margin-bottom: 50px;
+      }
+
+      input {
+        width: 100px;
+      }
+
+      /* 
+        使用CSS变数來控制圖片樣式
+        var() 函數用來取得變數值
+      */
+      img {
+        padding: var(--spacing);
+        background: var(--base);
+        filter: blur(var(--blur));
+        transition: all 0.3s ease;
+      }
+
+      .hl {
+        color: var(--base);
+      }
+    </style>
+
+    <script>
+      // 獲取所有的控制項
+      const inputs = document.querySelectorAll(".controls input");
+
+      // 處理變數更新的函數
+      function handleUpdate() {
+        // 獲取單位（px 或空字符串）
+        const suffix = this.dataset.sizing || "";
+
+        // 更新CSS變數
+        // 使用 :root 來設定全局CSS變數
+        document.documentElement.style.setProperty(
+          `--${this.name}`,
+          this.value + suffix
+        );
+
+        console.log(`更新變數 --${this.name}: ${this.value + suffix}`);
+      }
+
+      // 為每個控制項添加事件監聽器
+      inputs.forEach((input) => {
+        // 監聽 change 事件（當用戶完成更改時觸發）
+        input.addEventListener("change", handleUpdate);
+
+        // 監聽 mousemove 事件（當用戶拖動滑塊時實時觸發）
+        input.addEventListener("mousemove", handleUpdate);
+      });
+
+      // 初始化：確保頁面加載時應用默認值
+      inputs.forEach((input) => {
+        const suffix = input.dataset.sizing || "";
+        document.documentElement.style.setProperty(
+          `--${input.name}`,
+          input.value + suffix
+        );
+      });
+    </script>
+  </body>
+</html>
