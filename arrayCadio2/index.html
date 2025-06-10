@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Array Cardio 💪💪</title>
+  </head>
+  <body>
+    <p><em>Psst: have a look at the JavaScript Console</em> 💁</p>
+    <script>
+      // ## Array Cardio Day 2
+
+      const people = [
+        { name: "Wes", year: 1988 },
+        { name: "Kait", year: 1986 },
+        { name: "Irv", year: 1970 },
+        { name: "Lux", year: 2015 },
+      ];
+
+      const comments = [
+        { text: "Love this!", id: 523423 },
+        { text: "Super good", id: 823423 },
+        { text: "You are the best", id: 2039842 },
+        { text: "Ramen is my fav food ever", id: 123523 },
+        { text: "Nice Nice Nice!", id: 542328 },
+      ];
+
+      // Some and Every Checks
+      // Array.prototype.some() // is at least one person 19 or older?
+      console.log("1. 是否至少有一人年龄>=19岁?");
+      const someAdults = people.some((person) => {
+        const currentYear = new Date().getFullYear();
+        const age = currentYear - person.year;
+        return age >= 19;
+      });
+      console.log(someAdults);
+      console.table(
+        people.map((person) => ({
+          name: person.name,
+          year: person.year,
+          age: new Date().getFullYear() - person.year,
+          isAdult: new Date().getFullYear() - person.year >= 19,
+        }))
+      );
+
+      // Array.prototype.every() // is everyone 19 or older?
+      console.log("2. 是否所有人都年龄>=19岁?");
+      const everyoneAdult = people.every((person) => {
+        const currentYear = new Date().getFullYear();
+        const age = currentYear - person.year;
+        return age >= 19;
+      });
+      console.log(everyoneAdult);
+
+      // Array.prototype.find()
+      // Find is like filter, but instead returns just the one you are looking for
+      // find the comment with the ID of 823423
+      console.log("3. 查找ID为823423的评论:");
+      const comment = comments.find((comment) => comment.id === 823423);
+      console.log(comment);
+
+      // Array.prototype.findIndex()
+      // Find the comment with this ID
+      // delete the comment with the ID of 823423
+      console.log("4. 查找并删除ID为823423的评论:");
+      console.log("删除前的评论:", comments);
+
+      const commentIndex = comments.findIndex(
+        (comment) => comment.id === 823423
+      );
+      console.log("找到的评论索引:", commentIndex);
+
+      if (commentIndex !== -1) {
+        // 方法1：使用splice删除
+        const deletedComment = comments.splice(commentIndex, 1);
+        console.log("已删除的评论:", deletedComment[0]);
+        console.log("删除后的评论:", comments);
+
+        // 恢复被删除的评论用于演示方法2
+        comments.splice(commentIndex, 0, deletedComment[0]);
+
+        // 方法2：创建新数组（不改变原数组）
+        const newComments = [
+          ...comments.slice(0, commentIndex),
+          ...comments.slice(commentIndex + 1),
+        ];
+        console.log("方法2 - 创建新数组（原数组不变）:");
+        console.log("原数组:", comments);
+        console.log("新数组:", newComments);
+      } else {
+        console.log("未找到指定ID的评论");
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>🎨 甜美绘图板 HTML5 Canvas</title>
+  </head>
+  <body>
+    <div class="controls">
+      <h1>🎨 甜美绘图板</h1>
+      <div class="control-group">
+        <label>🌈 色相: <span id="hueValue">0</span>°</label>
+        <input type="range" id="hue" min="0" max="360" value="0" />
+      </div>
+      <div class="control-group">
+        <label>💫 饱和度: <span id="saturationValue">50</span>%</label>
+        <input type="range" id="saturation" min="0" max="100" value="50" />
+      </div>
+      <div class="control-group">
+        <label>✨ 亮度: <span id="lightnessValue">50</span>%</label>
+        <input type="range" id="lightness" min="0" max="100" value="50" />
+      </div>
+      <div class="control-group">
+        <label>🖊️ 粗细: <span id="strokeValue">50</span>px</label>
+        <input type="range" id="strokeWidth" min="1" max="100" value="50" />
+      </div>
+      <div class="control-group">
+        <input type="checkbox" id="smoothTransition" checked />
+        <label for="smoothTransition">🌟 平滑过渡</label>
+      </div>
+      <button id="clearCanvas">🗑️ 清空画布</button>
+    </div>
+
+    <canvas id="draw" width="900" height="600"></canvas>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        background: linear-gradient(45deg, #ffecd2, #fcb69f);
+        min-height: 100vh;
+      }
+
+      .controls {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 15px;
+        margin: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      h1 {
+        text-align: center;
+        color: #e91e63;
+        margin: 0 0 20px 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .control-group {
+        margin: 15px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      label {
+        font-weight: bold;
+        color: #2c3e50;
+        min-width: 120px;
+        font-size: 14px;
+      }
+
+      input[type="range"] {
+        flex: 1;
+        height: 8px;
+        border-radius: 5px;
+        background: linear-gradient(to right, #ff9a9e, #fecfef, #fecfef);
+        outline: none;
+        -webkit-appearance: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #e91e63;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #e91e63;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        border: none;
+      }
+
+      button {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        transition: all 0.3s ease;
+        font-family: inherit;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+      }
+
+      #draw {
+        display: block;
+        margin: 20px auto;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        background: white;
+        cursor: crosshair;
+      }
+
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #e91e63;
+      }
+    </style>
+
+    <script>
+      const canvas = document.querySelector("#draw");
+      const ctx = canvas.getContext("2d");
+
+      // 调整canvas分辨率
+      canvas.width = 900;
+      canvas.height = 600;
+
+      // 绘图状态
+      let isDrawing = false;
+      let lastX = 0;
+      let lastY = 0;
+
+      // 当前绘图参数
+      let currentHue = 0;
+      let currentSaturation = 50;
+      let currentLightness = 50;
+      let currentStroke = 50;
+
+      // 控制元素
+      const hueSlider = document.querySelector("#hue");
+      const saturationSlider = document.querySelector("#saturation");
+      const lightnessSlider = document.querySelector("#lightness");
+      const strokeSlider = document.querySelector("#strokeWidth");
+      const smoothTransition = document.querySelector("#smoothTransition");
+      const clearButton = document.querySelector("#clearCanvas");
+
+      // 显示值的元素
+      const hueValue = document.querySelector("#hueValue");
+      const saturationValue = document.querySelector("#saturationValue");
+      const lightnessValue = document.querySelector("#lightnessValue");
+      const strokeValue = document.querySelector("#strokeValue");
+
+      // 设置canvas默认样式
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.globalCompositeOperation = "multiply";
+
+      function updateColor() {
+        return `hsl(${currentHue}, ${currentSaturation}%, ${currentLightness}%)`;
+      }
+
+      function startDrawing(e) {
+        isDrawing = true;
+        [lastX, lastY] = getMousePos(e);
+
+        // 保存当前的绘图参数
+        currentHue = parseInt(hueSlider.value);
+        currentSaturation = parseInt(saturationSlider.value);
+        currentLightness = parseInt(lightnessSlider.value);
+        currentStroke = parseInt(strokeSlider.value);
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+
+        const [currentX, currentY] = getMousePos(e);
+
+        // 如果启用平滑过渡，动态变化参数
+        if (smoothTransition.checked) {
+          currentHue = parseInt(hueSlider.value);
+          currentSaturation = parseInt(saturationSlider.value);
+          currentLightness = parseInt(lightnessSlider.value);
+          currentStroke = parseInt(strokeSlider.value);
+        }
+
+        ctx.strokeStyle = updateColor();
+        ctx.lineWidth = currentStroke;
+
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(currentX, currentY);
+        ctx.stroke();
+
+        [lastX, lastY] = [currentX, currentY];
+      }
+
+      function stopDrawing() {
+        isDrawing = false;
+      }
+
+      function getMousePos(e) {
+        const rect = canvas.getBoundingClientRect();
+        return [e.clientX - rect.left, e.clientY - rect.top];
+      }
+
+      // 更新显示值
+      function updateDisplayValues() {
+        hueValue.textContent = hueSlider.value;
+        saturationValue.textContent = saturationSlider.value;
+        lightnessValue.textContent = lightnessSlider.value;
+        strokeValue.textContent = strokeSlider.value;
+      }
+
+      // 清空画布
+      function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // 事件监听器
+      canvas.addEventListener("mousedown", startDrawing);
+      canvas.addEventListener("mousemove", draw);
+      canvas.addEventListener("mouseup", stopDrawing);
+      canvas.addEventListener("mouseout", stopDrawing);
+
+      // 触摸事件支持
+      canvas.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent("mousedown", {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+        });
+        canvas.dispatchEvent(mouseEvent);
+      });
+
+      canvas.addEventListener("touchmove", (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent("mousemove", {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+        });
+        canvas.dispatchEvent(mouseEvent);
+      });
+
+      canvas.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        const mouseEvent = new MouseEvent("mouseup", {});
+        canvas.dispatchEvent(mouseEvent);
+      });
+
+      // 滑块事件
+      [hueSlider, saturationSlider, lightnessSlider, strokeSlider].forEach(
+        (slider) => {
+          slider.addEventListener("input", updateDisplayValues);
+        }
+      );
+
+      // 清空按钮
+      clearButton.addEventListener("click", clearCanvas);
+
+      // 初始化显示值
+      updateDisplayValues();
+
+      // 添加一些贴心提示
+      console.log("🎨 甜美绘图板使用说明:");
+      console.log("✨ 拖动滑块可以调整颜色和粗细");
+      console.log("🌟 启用平滑过渡，边画边变色！");
+      console.log("🖊️ 停笔再画，延续上次的设置");
+      console.log("📱 支持触摸设备");
+    </script>
+  </body>
+</html>
