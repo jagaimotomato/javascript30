@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Console Tricks!</title>
+  </head>
+  <body>
+    <p onClick="makeGreen()">×BREAK×DOWN×</p>
+
+    <script>
+      const dogs = [
+        { name: "Snickers", age: 2 },
+        { name: "Hugo", age: 8 },
+        { name: "Sunny", age: 1 },
+        { name: "Max", age: 5 },
+      ];
+
+      function makeGreen() {
+        const p = document.querySelector("p");
+        p.style.color = "#BADA55";
+        p.style.fontSize = "50px";
+      }
+
+      console.log("🎯 Console Tricks 演示开始！");
+
+      // Regular
+      console.log("1. 普通日志输出");
+
+      // Interpolated - 插值
+      const name = "张三";
+      console.log("2. 插值演示: 你好 %s", name);
+      console.log(`2. 模板字符串: 你好 ${name}`);
+
+      // Styled - 样式化输出
+      console.log(
+        "%c3. 样式化输出",
+        "font-size: 20px; color: blue; background: yellow; padding: 10px;"
+      );
+      console.log(
+        "%c别%c这%c样%c做",
+        "font-size: 16px; color: red;",
+        "font-size: 20px; color: green;",
+        "font-size: 24px; color: blue;",
+        "font-size: 28px; color: purple;"
+      );
+
+      // Warning!
+      console.warn("4. 警告信息 - 这是一个警告");
+
+      // Error :|
+      console.error("5. 错误信息 - 这是一个错误");
+
+      // Info
+      console.info("6. 信息提示 - 这是一条信息");
+
+      // Testing - 断言
+      console.assert(1 === 1, "7. 断言测试 - 这条不会显示");
+      console.assert(1 === 2, "7. 断言失败 - 1不等于2");
+
+      // Viewing DOM Elements
+      console.log("8. DOM元素查看:");
+      const p = document.querySelector("p");
+      console.log(p);
+      console.dir(p); // 显示对象的所有属性
+
+      // Grouping together - 分组
+      console.log("9. 分组演示:");
+      dogs.forEach((dog) => {
+        console.group(`🐕 ${dog.name}`);
+        console.log(`年龄: ${dog.age}岁`);
+        console.log(`成年了吗: ${dog.age >= 2 ? "是" : "否"}`);
+        console.groupEnd(`🐕 ${dog.name}`);
+      });
+
+      // 折叠分组
+      console.groupCollapsed("🐕 所有狗狗信息（折叠）");
+      dogs.forEach((dog) => {
+        console.log(`${dog.name}: ${dog.age}岁`);
+      });
+      console.groupEnd();
+
+      // Counting - 计数
+      console.log("10. 计数演示:");
+      console.count("苹果");
+      console.count("香蕉");
+      console.count("苹果");
+      console.count("苹果");
+      console.count("香蕉");
+      console.countReset("苹果"); // 重置计数器
+      console.count("苹果");
+
+      // Timing - 计时
+      console.log("11. 计时演示:");
+      console.time("数组遍历");
+      dogs.forEach((dog, index) => {
+        console.log(`${index}: ${dog.name}`);
+      });
+      console.timeEnd("数组遍历");
+
+      // 嵌套计时
+      console.time("总时间");
+      console.time("数据处理");
+      // 模拟一些处理时间
+      let sum = 0;
+      for (let i = 0; i < 1000000; i++) {
+        sum += i;
+      }
+      console.timeEnd("数据处理");
+      console.time("结果输出");
+      console.log("计算结果:", sum);
+      console.timeEnd("结果输出");
+      console.timeEnd("总时间");
+
+      // Table - 表格显示
+      console.log("12. 表格显示:");
+      console.table(dogs);
+      console.table(dogs, ["name"]); // 只显示name列
+
+      // 复杂对象表格
+      const users = [
+        { id: 1, name: "小明", city: "北京", age: 25 },
+        { id: 2, name: "小红", city: "上海", age: 30 },
+        { id: 3, name: "小李", city: "广州", age: 28 },
+      ];
+      console.table(users);
+
+      // Trace - 堆栈跟踪
+      console.log("13. 堆栈跟踪:");
+      function first() {
+        second();
+      }
+      function second() {
+        third();
+      }
+      function third() {
+        console.trace("调用堆栈跟踪");
+      }
+      first();
+
+      // 高级技巧
+      console.log("14. 高级技巧:");
+
+      // 条件断点
+      dogs.forEach((dog, index) => {
+        if (dog.age > 5) {
+          console.log(`老狗 ${dog.name} 需要特别关注`);
+        }
+      });
+
+      // 对象解构
+      console.log("15. 对象解构输出:");
+      const user = { name: "张三", age: 30, city: "北京" };
+      console.log({ user }); // 显示变量名和值
+      console.log({ user, dogs }); // 多个对象
+
+      // JSON 美化输出
+      console.log("16. JSON 美化:");
+      console.log(JSON.stringify(dogs, null, 2));
+
+      // 性能标记
+      console.log("17. 性能标记:");
+      performance.mark("开始标记");
+      // 模拟一些操作
+      setTimeout(() => {
+        performance.mark("结束标记");
+        performance.measure("操作耗时", "开始标记", "结束标记");
+        console.log("查看Performance面板了解详细信息");
+      }, 100);
+
+      // Memory 使用情况（仅Chrome）
+      if (console.memory) {
+        console.log("18. 内存使用情况:");
+        console.log(console.memory);
+      }
+
+      // Clear - 清空控制台（注释掉，避免清除演示内容）
+      // console.clear();
+
+      console.log("🎉 Console Tricks 演示完成！打开开发者工具查看所有效果");
+    </script>
+  </body>
+</html>
