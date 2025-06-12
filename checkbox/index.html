@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hold Shift to Check Multiple Checkboxes</title>
+  </head>
+  <body>
+    <style>
+      html {
+        font-family: sans-serif;
+        background: #ffc600;
+      }
+
+      .inbox {
+        max-width: 400px;
+        margin: 50px auto;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
+      }
+
+      .item {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #f1f1f1;
+      }
+
+      .item:last-child {
+        border-bottom: 0;
+      }
+
+      input:checked + p {
+        background: #f9f9f9;
+        text-decoration: line-through;
+      }
+
+      input[type="checkbox"] {
+        margin: 20px;
+      }
+
+      p {
+        margin: 0;
+        padding: 20px;
+        transition: background 0.2s;
+        flex: 1;
+        font-family: "helvetica neue";
+        font-size: 20px;
+        font-weight: 200;
+        border-left: 1px solid #d1e2ff;
+      }
+
+      /* 添加一些视觉反馈 */
+      .item:hover {
+        background: #f5f5f5;
+      }
+
+      .instructions {
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 5px;
+        font-family: "helvetica neue";
+      }
+
+      .instructions h3 {
+        margin-top: 0;
+        color: #333;
+      }
+
+      .instructions ul {
+        padding-left: 20px;
+      }
+
+      .instructions li {
+        margin: 8px 0;
+        color: #666;
+      }
+    </style>
+
+    <div class="instructions">
+      <h3>📧 Gmail风格多选功能</h3>
+      <ul>
+        <li>🖱️ 单击复选框：选中/取消选中</li>
+        <li>⌨️ Shift+点击：选中两个复选框之间的所有项目</li>
+        <li>🔄 支持从上到下或从下到上选择</li>
+        <li>✨ 第三次及以后的Shift选择会智能处理已选中的项目</li>
+      </ul>
+    </div>
+
+    <!--
+   The following is a common layout you would see in an email client.
+
+   When a user clicks a checkbox, holds Shift, and then clicks another checkbox a few rows down, all the checkboxes inbetween those two checkboxes should be checked.
+
+  -->
+    <div class="inbox">
+      <div class="item">
+        <input type="checkbox" />
+        <p>This is an inbox layout.</p>
+      </div>
+      <div class="item">
+        <input type="checkbox" />
+        <p>Check one item</p>
+      </div>
+      <div class="item">
+        <input type="checkbox" />
+        <p>Hold down your Shift key</p>
+      </div>
+      <div class="item">
+        <input type="checkbox" />
+        <p>Check a lower item</p>
+      </div>
+      <div class="item">
+        <input type="checkbox" />
+        <p>Everything inbetween should also be set to checked</p>
+      </div>
+      <div class="item">
+        <input type="checkbox" />
+        <p>Try do it without any libraries</p>
+      </div>
+      <div class="item">
+        <input type="checkbox" />
+        <p>Just regular JavaScript</p>
+      </div>
+      <div class="item">
+        <input type="checkbox" />
+        <p>Good Luck!</p>
+      </div>
+      <div class="item">
+        <input type="checkbox" />
+        <p>Don't forget to tweet your result!</p>
+      </div>
+    </div>
+
+    <script>
+      // 获取所有复选框
+      const checkboxes = document.querySelectorAll(
+        '.inbox input[type="checkbox"]'
+      );
+      let lastChecked; // 记录上次点击的复选框
+
+      function handleCheck(e) {
+        console.log("点击了复选框:", this);
+
+        // 检查是否按住了 Shift 键并且之前有选中过复选框
+        if (e.shiftKey && lastChecked && lastChecked !== this) {
+          console.log("Shift + 点击检测到！");
+
+          // 将 NodeList 转换为数组以便使用 indexOf
+          const checkboxArray = Array.from(checkboxes);
+
+          // 找到上次点击和当前点击的复选框索引
+          const lastIndex = checkboxArray.indexOf(lastChecked);
+          const currentIndex = checkboxArray.indexOf(this);
+
+          console.log(`范围: ${lastIndex} 到 ${currentIndex}`);
+
+          // 确定选择范围的开始和结束位置
+          const start = Math.min(lastIndex, currentIndex);
+          const end = Math.max(lastIndex, currentIndex);
+
+          // 获取当前点击复选框的状态
+          const shouldCheck = this.checked;
+
+          // 选中/取消选中范围内的所有复选框
+          for (let i = start; i <= end; i++) {
+            checkboxArray[i].checked = shouldCheck;
+          }
+
+          console.log(
+            `已${
+              shouldCheck ? "选中" : "取消选中"
+            }从 ${start} 到 ${end} 的所有项目`
+          );
+        }
+
+        // 更新最后点击的复选框
+        lastChecked = this;
+      }
+
+      // 为每个复选框添加事件监听器
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("click", handleCheck);
+      });
+
+      // 添加键盘提示
+      document.addEventListener("keydown", (e) => {
+        if (e.shiftKey) {
+          document.body.style.cursor = "crosshair";
+        }
+      });
+
+      document.addEventListener("keyup", (e) => {
+        if (!e.shiftKey) {
+          document.body.style.cursor = "default";
+        }
+      });
+
+      // 控制台提示
+      console.log("📧 Gmail风格多选复选框已加载！");
+      console.log("🎯 使用方法：");
+      console.log("1. 单击任意复选框选中它");
+      console.log("2. 按住 Shift 键点击另一个复选框");
+      console.log("3. 两个复选框之间的所有项目都会被选中/取消选中");
+      console.log("4. 支持从上到下或从下到上的选择");
+    </script>
+  </body>
+</html>
